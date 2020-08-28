@@ -57,13 +57,8 @@ int main()
 
 
 int writeDiskBlock(int fd, int block_num, void * buf){
-    int ret ;
-    if( (ret = write(fd, buf, BLK_SIZE)) == -1){
-        perror("write error in block") ;
-        exit(1) ;
-    }
-
-    return ret ;
+    lseek(fd, block_num * BLK_SIZE, SEEK_SET) ;
+    return write(fd, buf, BLK_SIZE) ;
 }
 
 
@@ -101,15 +96,8 @@ void storeFileOntoDisk(char * file_path)
 }
 
 int readDiskBlock(int fd, int block_num, void *buf){
-    lseek(fd, block_num * BLK_SIZE, SEEK_SET) ;
-    int ret , i = 0;
-    
-    if((ret = read(fd_VD, buf, BLK_SIZE)) == -1){
-        perror("error in reading block:");
-        exit(1) ;
-    }
-
-    return ret ;
+ 	lseek(fd, block_num * BLK_SIZE, SEEK_SET) ;
+    return read(fd, buf, BLK_SIZE) ;
 }
 void getFileFromDisk(char * file_path)
 {   
