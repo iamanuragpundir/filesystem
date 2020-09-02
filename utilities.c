@@ -32,7 +32,6 @@ void getFilename(char  * buffer, char * filename){
 		i++ ;
 	}
 	filename[i] = '\0' ;
-	printf("getFilename : %s\n", filename);
 }
 
 off_t filesize(char *buffer){
@@ -43,6 +42,5 @@ off_t filesize(char *buffer){
 		ans = ans*10 + buffer[i] - 48 ;
 		i++ ;
 	}
-	printf("filesize : %ld\n", ans);
 	return ans ;
 }

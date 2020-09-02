@@ -24,7 +24,6 @@ void VdCpto(char * file_path, char * filename)
 	int file_fd = open(file_path, O_RDONLY) ;
 
 	off_t fileLength = lseek(file_fd, 0, SEEK_END) ;
-	printf(" VdCpto %ld\n",fileLength );
 	lseek(file_fd, 0, SEEK_SET);
 	
 	//First block of the file will represent its filename, filesize
@@ -60,7 +59,6 @@ void VdCpto(char * file_path, char * filename)
 		header[j++] = '\0' ;
 
 	int block_num = free_block ;
-	printf ("free  %d\n", free_block) ;
 	//inserting file header into linked list created in RAM for fast searching
 	insert(filename, fileLength, block_num) ; 
 	
@@ -69,10 +67,9 @@ void VdCpto(char * file_path, char * filename)
 	bzero(turn_on, BLK_SIZE) ;
 	readDiskBlock(fd_VD, block_num/BLK_SIZE, turn_on) ;
 	turn_on[block_num%BLK_SIZE]  = 'y' ;
-	writeDiskBlock(fd_VD, block_num/BLK_SIZE, turn_on) ;
+	writeDiskBlock(fd_VD, block_num/BLK_SIZE, turn_on);
 
 	writeDiskBlock(fd_VD, block_num, header) ;
-	printf("header %s\n",header );
 	block_num ++ ;
 
 	// now copying the file data onto the disk (poor man's)

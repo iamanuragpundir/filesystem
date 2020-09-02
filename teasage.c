@@ -17,31 +17,31 @@ extern int errno;
 char nullbyte[] = "\0";
 
 void initial_disk_read()
-{	free_block = 80 ;
+{	free_block = 80;
 	for(int i = 0; i < 80; i++){
 		char buf[BLK_SIZE] ;
-		readDiskBlock(fd_VD, i, buf) ;
-	
+		readDiskBlock(fd_VD, i, buf);
+		
 		for (int j = 0; j < BLK_SIZE; j++)
 			if (buf[j] == 'y'){
 				
 
 				char filename[FILE_NAME_SIZE], header_buf[BLK_SIZE] ;
 	
-				readDiskBlock(fd_VD, j, header_buf) ;
+				readDiskBlock(fd_VD, i * BLK_SIZE + j, header_buf);
 
 				getFilename(header_buf, filename) ;
 
 				off_t size  = filesize(header_buf) ;
 	
-				insert(filename, size, j) ;
+				insert(filename, size,i * BLK_SIZE + j) ;
 
 				//change the position of the freeblock, since we have a file here
-				printf("%d %ld\n",free_block, size );
-				free_block = j + ceil(size/BLK_SIZE)  + 1;
-				
+				if  (size % BLK_SIZE == 0)
+					free_block = i * BLK_SIZE + j + size/BLK_SIZE  + 1;
+				else
+					free_block =  i * BLK_SIZE + j + size/BLK_SIZE  + 2;
 
-				
 			}
 	}	
 }
@@ -50,8 +50,8 @@ int main()
 {
 	system("clear") ;
 
-    off_t disksize = 20971520L;
-    //Let's create a disk of about 10MB - poor man's harddisk
+    off_t disksize = 20971520L - 1L;
+    //Let's create a disk of about 20MB - poor man's harddisk
     //our company name is teasage - producers of such great disks in a jiffy
     //with this we will compete with seagate :)
     fd_VD = open("disk.teasage", O_RDWR | O_CREAT, 00700);
@@ -62,7 +62,7 @@ int main()
         perror("Open error.");
         exit(1);
     }
-    
+   
     //writing  null byte to the disk
    
     if (write(fd_VD, nullbyte, 1) != 1){
