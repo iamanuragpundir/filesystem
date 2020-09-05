@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h> 
 #include "myMalloc.h"
+#include "disk_ops.h"
 
 typedef struct filedata {
 	char * filename ;
@@ -12,11 +13,29 @@ typedef struct filedata {
 
 node *head = NULL ;
 
-void insert (char * filename, off_t size, int block_num){		
-	//not bothering for the same filename for the time being
+int insert (char * filename, off_t size, int block_num){		
+	
+	if (if_present(filename) != -1){  // means file is already present
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "File with same name exists on the disk.") ;
+		return -1 ;
+	} 
+
 	//using mymalloc
-	node *new = (node *)malloc(sizeof(node)) ; 
-	new->filename  = (char *)malloc(strlen(filename)) ;
+	node *new = (node *)mymalloc(sizeof(node)) ;	//defined in myMallloc.c
+	if (new == NULL){
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "Memory allocation failed; Overflow") ;
+		return -1 ;
+	}
+
+	new->filename  = (char *)mymalloc(strlen(filename) + 1) ;	//defined in myMallloc.c
+	if (new->filename == NULL){
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "Memory allocation failed; Overflow") ;
+		return -1 ;
+	}
+
 	strcpy(new->filename, filename);
 	new->block_num = block_num ;
 	new->size = size ;
@@ -33,13 +52,14 @@ void insert (char * filename, off_t size, int block_num){
 		temp->next = new ;	
 	}
 	
+	return 1 ;
 }
 
-void display(char * total_files){
+int display(char * total_files){
 
 	if (head == NULL){
 		total_files[0] = '\0' ;
-		return ;
+		return -1 ;
 	}
 	
 	node *ptr = head ;
@@ -50,6 +70,7 @@ void display(char * total_files){
 		ptr = ptr->next ;
 	}
 
+	return 1 ;
 }
 
 // if file is present, returns block number at the which the file header is present

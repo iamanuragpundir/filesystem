@@ -9,17 +9,37 @@
 
 #define FILE_NAME_SIZE 256
 #define BLK_SIZE 512
-
-int myerrorno ;
-// 1 -- 
+#define LAST_BLK 40960
 
 int writeDiskBlock(int fd, int block_num, void * buf){
-    lseek(fd, block_num * BLK_SIZE, SEEK_SET) ;
+
+	if (block_num > LAST_BLK ){
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "Disk full.") ;
+		return -2 ;
+	}
+
+	if (block_num < 0){
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "Invalid block number in writeDiskBlock()") ;
+		return -2 ;
+	}
+    if (lseek(fd, block_num * BLK_SIZE, SEEK_SET)==-1)
+    	return -1 ;
+
     return write(fd, buf, BLK_SIZE) ;
 }
 
 int readDiskBlock(int fd, int block_num, void *buf){
- 	lseek(fd, block_num * BLK_SIZE, SEEK_SET) ;
+	if (block_num > LAST_BLK || block_num < 0){
+		bzero(error_msg, 256) ;
+		strcpy(error_msg, "Invalid block number for readDiskBlock()") ;
+		return -2 ;
+	}
+
+ 	if (lseek(fd, block_num * BLK_SIZE, SEEK_SET) == -1 )
+ 		return -1 ;
+ 	
     return read(fd, buf, BLK_SIZE) ;
 }
 
