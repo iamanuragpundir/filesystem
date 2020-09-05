@@ -142,7 +142,7 @@ int main()
 			bzero(filename, FILE_NAME_SIZE) ;
 			bzero(file_path, FILE_NAME_SIZE) ;
 
-			printf("Copt to path :");
+			printf("Copy to path :");
 			scanf("%s", file_path) ;
 			printf("Enter file name :");
 			scanf("%s", filename) ;			
