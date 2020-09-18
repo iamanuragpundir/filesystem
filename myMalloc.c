@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include "myMalloc.h"
 
-#define GIVEN_MEM 3000000
+#define GIVEN_MEM 2000000
 
 /* allocate 2 million bytes in an array statically */
 unsigned char arr[GIVEN_MEM];
